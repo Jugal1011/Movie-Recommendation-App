@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit run Movie_App.py
+web: streamlit run Movie_App.py --server.port=$PORT --server.address=0.0.0.0
