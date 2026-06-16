@@ -13,10 +13,18 @@ movies_dict = pickle.load(open('movies_dict.pkl','rb'))
 similarity = pickle.load(open('similarity.pkl','rb'))
 movies = pd.DataFrame(movies_dict)
 
+if "show_recommendations" not in st.session_state:
+    st.session_state.show_recommendations = False
+    
+def movie_changed():
+    st.session_state.show_recommendations = False
+
 # Dropdown for movie selection
 selected_movie = st.selectbox(
     "Select a movie from the dropdown below to get recommendations.",
-    movies['title'].values
+    movies['title'].values,
+    key="selected_movie",
+    on_change=movie_changed
 )
 
 # Function to fetch poster from TMDB API
@@ -46,11 +54,13 @@ def recommend(movie):
         
     return recommended_movie_names, recommended_movie_posters
 
-# UI
-if st.button('Show Recommendation'):
+if st.button("Show Recommendation"):
+    st.session_state.show_recommendations = True
+
+# Display recommendations only after button click
+if st.session_state.show_recommendations:
     recommended_movie_names, recommended_movie_posters = recommend(selected_movie)
-    
-    cols = st.columns(5)  # Create 5 columns
+    cols = st.columns(5)
     for i, col in enumerate(cols):
         with col:
             st.text(recommended_movie_names[i])
